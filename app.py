@@ -1,5 +1,7 @@
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import requests
 from flask_cors import CORS
@@ -14,9 +16,9 @@ class OpenAIQuizGenerator:
         self.api_key = api_key
     
     def generate_quiz(self, topic, num_questions = 5):
-        system_prompt = ("You are an expert quiz generator. Create well-formed, educational quiz questions, that test knowledge but are also interesting. ")
+        system_prompt = ("You are an expert quiz generator. Create well-formed, educational quiz questions, that test knowledge but are also interesting.")
 
-        user_prompt = (f""" Gerneate a multiple-choice quiz with {num_questions} questions about {topic}.
+        user_prompt = f""" Gerneate a multiple-choice quiz with {num_questions} questions about {topic}.
         For each question:
         - make the question clear and concise
         - provide 4 answer choices (A, B, C, D)
@@ -25,22 +27,17 @@ class OpenAIQuizGenerator:
         - indicate which option is correct
         
         format your response as valid JSON following this exact structure:
-        {
+        {{
             "title": "Quiz title related to topic",
             "questions": [
-                {
+                {{
                     "question": "Questions text",
-                    "options": [
-                        "Option A",
-                        "Option B",
-                        "Option C",
-                        "Option D"
-                    ],
-                    "correct_index": 0 // 0-based index of the correct answer
-                },
-                // More questions...
+                    "options": ["Option A","Option B","Option C","Option D"],
+                    "correct_index": 0
+                }},
+                # More questions...
             ]
-        }""")
+        }}"""
         return self.call_openai_api(system_prompt, user_prompt)
 
     def call_openai_api(self, system_prompt, user_prompt):
