@@ -16,7 +16,7 @@ class OpenAIQuizGenerator:
     def generate_quiz(self, topic, num_questions = 5):
         system_prompt = ("You are an expert quiz generator. Create well-formed, educational quiz questions, that test knowledge but are also interesting. ")
 
-        user_prompt = f""" Gerneate a multiple-choice quiz with {num_questions} questions about {topic}.
+        user_prompt = (f""" Gerneate a multiple-choice quiz with {num_questions} questions about {topic}.
         For each question:
         - make the question clear and concise
         - provide 4 answer choices (A, B, C, D)
@@ -28,7 +28,7 @@ class OpenAIQuizGenerator:
         {
             "title": "Quiz title related to topic",
             "questions": [
-                {{
+                {
                     "question": "Questions text",
                     "options": [
                         "Option A",
@@ -36,13 +36,13 @@ class OpenAIQuizGenerator:
                         "Option C",
                         "Option D"
                     ],
-                    "correct_index": 0 #0-based index of the correct answer
-                }},
-                #More questions...
+                    "correct_index": 0 // 0-based index of the correct answer
+                },
+                // More questions...
             ]
-        }"""
-
+        }""")
         return self.call_openai_api(system_prompt, user_prompt)
+
     def call_openai_api(self, system_prompt, user_prompt):
         headers = {
             "Content-Type": "application/json",
@@ -88,6 +88,10 @@ class OpenAIQuizGenerator:
             
             quiz_data = json.loads(json_str)
             return quiz_data
+        except Expection as e:
+            print(f"Error parsing JSON: {str(e)}")
+            print(f"Raw content: {content}")
+            return {"error": "Failed to parse JSON response from OpenAI"}
 
 @app.route('/api/generate_quiz', methods=['POST'])
 def generate_quiz():
@@ -107,4 +111,5 @@ def generate_quiz():
 
     return jsonify(result)
 
-    
+if __name__ == '__main__':
+    app.run(debug=True)
